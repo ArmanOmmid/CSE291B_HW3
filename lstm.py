@@ -53,13 +53,13 @@ class LSTMGenerator(_LSTM):
         hidden, cell = self.init_hidden(batch_size)
 
         # outputs = torch.zeros(batch_size, seq_lengths, self.dim, device=self.get_device())
-
-        inputs = z.unsqueeze(1) # Add L dim
+        # inputs = z.unsqueeze(1) # Add L dim
+        inputs = z
         # for i in range(seq_lengths):
         output, (hidden, cell) = self.lstm(inputs, (hidden, cell))
-        inputs = output
+        # inputs = output
         output = self.fc(output)
-        # outputs[:, i, :] = output.squeeze(1)
+            # outputs[:, i, :] = output.squeeze(1)
 
         return output
 
