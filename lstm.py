@@ -53,8 +53,7 @@ class LSTMGenerator(_LSTM):
         batch_size = z.size(0)
         hidden, cell = self.init_hidden(batch_size)
 
-        outputs = torch.zeros(batch_size, seq_lengths, self.dim)
-        outputs.to(self.get_device())
+        outputs = torch.zeros(batch_size, seq_lengths, self.dim, device=self.get_device())
 
         inputs = z.unsqueeze(1) # Add L dim
         for i in range(seq_lengths):
@@ -77,9 +76,9 @@ class LSTMDiscriminator(_LSTM):
         self.fc = nn.Linear(h_dim, 1)
 
     def forward(self, inputs):
-        # hidden, cell = self.init_hidden(inputs.size(0))
+        hidden, cell = self.init_hidden(inputs.size(0))
 
-        output, (hidden, cell) = self.lstm(inputs)
+        output, (hidden, cell) = self.lstm(inputs, (hidden, cell))
         output = self.fc(hidden[-1]) # Last Layers hidden states
 
         return output
