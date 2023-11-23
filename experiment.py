@@ -52,7 +52,7 @@ def run_epoch(
                 #     g_loss.backward()
                 #     optimizer_generator.step()
 
-                g_loss = MSE(fake_x, real_x)
+                g_loss = MSE(fake_x, torch.ones_like(real_x))
                 if learn:
                     g_loss.backward()
                     optimizer_generator.step()
