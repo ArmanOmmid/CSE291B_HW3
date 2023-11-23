@@ -36,11 +36,6 @@ def run_epoch(
                     real_x = real_x * create_batch_mask(real_x)
                     fake_x = fake_x * create_batch_mask(fake_x)
 
-                g_loss = criterion(discriminator(fake_x), real_labels)
-                if learn:
-                    g_loss.backward()
-                    optimizer_generator.step()
-
                 optimizer_discriminator.zero_grad()
                 real_loss = criterion(discriminator(real_x), real_labels)
                 fake_loss = criterion(discriminator(fake_x.detach()), fake_labels)
@@ -49,8 +44,14 @@ def run_epoch(
                     d_loss.backward()
                     optimizer_discriminator.step()
 
-                epoch_g_loss += g_loss.item() * batch_size
-                epoch_d_loss += d_loss.item() * batch_size
+                g_loss = criterion(discriminator(fake_x), real_labels)
+                if learn:
+                    g_loss.backward()
+                    optimizer_generator.step()
+
+                with torch.no_grad():
+                    epoch_g_loss += g_loss.detach().item() * batch_size
+                    epoch_d_loss += d_loss.detach().item() * batch_size
 
         avg_epoch_g_loss = epoch_g_loss / dataset_len
         avg_epoch_d_loss = epoch_d_loss / dataset_len
