@@ -61,7 +61,8 @@ def revert(data):
         reverted[i][:, :2] = (reverted[i][:, :2] * 1000) - 500
         reverted[i] = np.round(reverted[i]).astype(np.int16)
     reverted = np.array(reverted, dtype=object)
-    reverted = np.squeeze(reverted, axis=0)
+    if reverted.shape[0] == 1:
+        reverted = np.squeeze(reverted, axis=0)
     return reverted
 
 def create_mask(data):
