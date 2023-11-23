@@ -49,13 +49,15 @@ class LSTMGenerator(_LSTM):
         self.fc = nn.Linear(h_dim, dim)
 
     def forward(self, z):
-        batch_size = z.size(0)
-        hidden, cell = self.init_hidden(batch_size)
-
         inputs = z
-        output, (hidden, cell) = self.lstm(inputs, (hidden, cell))
+        output, _ = self.lstm(inputs)
         output = self.fc(output)
-
+        
+        x_y = torch.tanh(output[:, :, :2]) * 3 
+        
+        b_p = torch.sigmoid(output[:, :, 2:])
+        
+        output = torch.cat((x_y, b_p), dim=2)
         return output
 
 class LSTMDiscriminator(_LSTM):
