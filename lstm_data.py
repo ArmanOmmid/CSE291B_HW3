@@ -83,7 +83,7 @@ def create_batch_mask(data):
     end_token_indices = (data[..., end_token_index] == 1).long().argmax(dim=1)
 
     # Create a range tensor that broadcasts across the batch
-    sequence_range = torch.arange(data.size(1)).unsqueeze(0)
+    sequence_range = torch.arange(data.size(1)).unsqueeze(0).to(data.device)
 
     # Use broadcasting to compare the range with the indices and create the mask
     mask = sequence_range < end_token_indices.unsqueeze(1)
