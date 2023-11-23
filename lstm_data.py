@@ -8,9 +8,11 @@ END_TOKEN = np.array([-1, -1, 1, 1])
 PAD_TOKEN = np.array([-1, -1, -1, 1])
 
 class LSTMDataset(Dataset):
-    def __init__(self, data) -> None:
+    def __init__(self, data, mean, std) -> None:
         super().__init__()
         self.data = self._prepare(data)
+        self.mean_x, self.mean_y = mean
+        self.std_x, self.std_y = std
 
     def __len__(self):
         return len(self.data)
@@ -27,7 +29,8 @@ class LSTMDataset(Dataset):
         prepared = np.zeros((size, MAX_LENGTH, 4))
         for i in range(size):
             seq_len = data[i].shape[0]
-            prepared[i, :seq_len, :2] = (data[i][:, :2] + 500) / 1000
+            prepared[i, :seq_len, 0] = (data[i][:, 0] + self.mean_x) / self.std_x
+            prepared[i, :seq_len, 1] = (data[i][:, 1] + self.mean_y) / self.std_y
             prepared[i, :seq_len, 2] = data[i][:, 2]
             prepared[i, seq_len, :] = END_TOKEN
             prepared[i, seq_len+1:, :] = PAD_TOKEN
@@ -42,12 +45,13 @@ class LSTMDataset(Dataset):
             end_indices = (np.round(data[i, :, 3]) == 1).nonzero()[0]
             end_index = end_indices[0] if len(end_indices) > 0 else MAX_LENGTH
             reverted.append(data[i, :end_index, :3])
-            reverted[i][:, :2] = (reverted[i][:, :2] * 1000) - 500
+            reverted[i][:, 0] = (reverted[i][:, 0] * self.std_x) - self.mean_x
+            reverted[i][:, 1] = (reverted[i][:, 1] * self.std_y) - self.mean_y
             reverted[i] = np.round(reverted[i]).astype(np.int16)
         reverted = np.array(reverted, dtype=object)
         return reverted
     
-def revert(data):
+def revert(data, mean, std):
     if isinstance(data, torch.Tensor):
         data = data.detach().cpu().numpy()
     data = np.copy(data)
@@ -58,7 +62,8 @@ def revert(data):
         end_indices = (np.round(data[i, :, 3]) == 1).nonzero()[0]
         end_index = end_indices[0] if len(end_indices) > 0 else MAX_LENGTH
         reverted.append(data[i, :end_index, :3])
-        reverted[i][:, :2] = (reverted[i][:, :2] * 1000) - 500
+        reverted[i][:, 0] = (reverted[i][:, 0] * std[0]) - mean[0]
+        reverted[i][:, 1] = (reverted[i][:, 1] * std[1]) - mean[1]
         reverted[i] = np.round(reverted[i]).astype(np.int16)
     reverted = np.array(reverted, dtype=object)
     if reverted.shape[0] == 1:
