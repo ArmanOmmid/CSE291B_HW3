@@ -17,12 +17,11 @@ class _Network(nn.Module, ABC):
         if not weights_path: return
         self.load_state_dict(torch.load(weights_path, map_location=torch.device(map_location)))
 
-    def save(self, path: str, tag: str, filename: str="weights.pth"):
+    def save(self, save_path):
         """
         All saves should be under the same path folder, under different tag folders, with the same filename
         """
-        filename = filename.split(".")[0] + WEIGHTS_EXTENSION
-        save_path = os.path.join(path, tag, filename)
+        save_path = save_path.split(".")[0] + WEIGHTS_EXTENSION
         torch.save(self.state_dict(), save_path)
 
 class _LSTM(_Network):

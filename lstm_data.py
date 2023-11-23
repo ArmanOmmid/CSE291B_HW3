@@ -49,7 +49,10 @@ class LSTMDataset(Dataset):
     
 def revert(data):
     if isinstance(data, torch.Tensor):
-        data = data.detach().numpy()
+        data = data.detach().cpu().numpy()
+    data = np.copy(data)
+    if len(data.shape) == 2:
+        data = np.expand_dims(data, axis=0)
     reverted = []
     for i in range(len(data)):
         end_indices = (np.round(data[i, :, 3]) == 1).nonzero()[0]
@@ -58,6 +61,7 @@ def revert(data):
         reverted[i][:, :2] = (reverted[i][:, :2] * 1000) - 500
         reverted[i] = np.round(reverted[i]).astype(np.int16)
     reverted = np.array(reverted, dtype=object)
+    reverted = np.squeeze(reverted, axis=0)
     return reverted
 
 def create_mask(data):
