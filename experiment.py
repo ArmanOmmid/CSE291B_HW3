@@ -38,13 +38,13 @@ def run_epoch(
 
                 optimizer_discriminator.zero_grad()
                 real_loss = criterion(discriminator(real_x), real_labels)
-                fake_loss = criterion(discriminator(fake_x.detach()), fake_labels)
+                fake_loss = criterion(discriminator(fake_x), fake_labels)
                 d_loss = (real_loss + fake_loss) / 2
                 if learn:
                     d_loss.backward()
                     optimizer_discriminator.step()
 
-                g_loss = criterion(discriminator(fake_x), real_labels)
+                g_loss = criterion(discriminator(fake_x.detach()), real_labels)
                 if learn:
                     g_loss.backward()
                     optimizer_generator.step()
