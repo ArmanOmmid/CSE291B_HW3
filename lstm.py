@@ -76,9 +76,9 @@ class LSTMDiscriminator(_LSTM):
         self.fc = nn.Linear(h_dim, 1)
 
     def forward(self, inputs):
-        hidden, cell = self.init_hidden(inputs.size(0))
+        # hidden, cell = self.init_hidden(inputs.size(0))
 
-        output, (hidden, cell) = self.lstm(inputs, (hidden, cell))
+        output, (hidden, cell) = self.lstm(inputs)
         output = self.fc(hidden[-1]) # Last Layers hidden states
 
         return output
