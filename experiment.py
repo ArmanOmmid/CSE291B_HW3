@@ -13,10 +13,11 @@ def run_epoch(
         device,
         learn,
         mse_support = False,
+        warm_up = False,
         mask = False
     ):
         
-        if mse_support:
+        if mse_support or warm_up:
             mse_criteron = nn.MSELoss()
 
         dataset_len = len(data_loader.dataset)
@@ -30,6 +31,17 @@ def run_epoch(
                 real_x = real_x.to(device)
 
                 batch_size = real_x.size(0)
+
+                if warm_up:
+                    optimizer_generator.zero_grad()
+                    z = torch.randn(batch_size, 251, generator.h_dim, device=device)
+                    fake_x = generator(z)
+                    g_loss = mse_criteron(fake_x, real_x)
+                    with torch.no_grad():
+                        epoch_g_loss += g_loss.detach().item() * batch_size
+                    continue
+
+
                 real_labels = torch.ones(batch_size, 1, device=device)
                 fake_labels = torch.zeros(batch_size, 1, device=device)
                 
@@ -49,7 +61,6 @@ def run_epoch(
                     else:
                         g_loss.backward()
                     optimizer_generator.step()
-
 
                 optimizer_discriminator.zero_grad()
                 real_loss = criterion(discriminator(real_x), real_labels)
