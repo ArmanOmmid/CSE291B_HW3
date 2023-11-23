@@ -48,10 +48,10 @@ class LSTMGenerator(_LSTM):
         self.lstm = nn.LSTM(h_dim, h_dim, num_layers, batch_first=True)
         self.fc = nn.Linear(h_dim, dim)
 
-    def forward(self, z, seq_lengths=251):
+    def forward(self, z):
         batch_size = z.size(0)
         hidden, cell = self.init_hidden(batch_size)
-        
+
         inputs = z
         output, (hidden, cell) = self.lstm(inputs, (hidden, cell))
         output = self.fc(output)

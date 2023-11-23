@@ -10,9 +10,9 @@ PAD_TOKEN = np.array([-1, -1, -1, 1])
 class LSTMDataset(Dataset):
     def __init__(self, data, mean, std) -> None:
         super().__init__()
-        self.data = self._prepare(data)
         self.mean_x, self.mean_y = mean
         self.std_x, self.std_y = std
+        self.data = self._prepare(data)
 
     def __len__(self):
         return len(self.data)
