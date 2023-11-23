@@ -28,9 +28,12 @@ class _Network(nn.Module, ABC):
 class _LSTM(_Network):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def get_device(self):
+        return next(self.parameters()).device
     
     def init_hidden(self, batch_size):
-        device = next(self.parameters()).device
+        device = self.get_device()
         h0 = torch.zeros(self.num_layers, batch_size, self.h_dim, device=device)
         c0 = torch.zeros(self.num_layers, batch_size, self.h_dim, device=device)
         return (h0, c0)
@@ -51,6 +54,7 @@ class LSTMGenerator(_LSTM):
         hidden, cell = self.init_hidden(batch_size)
 
         outputs = torch.zeros(batch_size, seq_lengths, self.dim)
+        outputs.to(self.get_device())
 
         inputs = z.unsqueeze(1) # Add L dim
         for i in range(seq_lengths):
