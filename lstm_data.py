@@ -4,7 +4,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset
 
 MAX_LENGTH = 251
-END_TOKEN = np.array([0, 0, 1, 1])
+END_TOKEN = np.array([-1, -1, 1, 1])
 PAD_TOKEN = np.array([0, 0, 0, 1])
 
 class LSTMDataset(Dataset):
