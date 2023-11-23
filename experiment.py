@@ -12,8 +12,12 @@ def run_epoch(
         optimizer_discriminator,
         device,
         learn,
+        mse_support = False,
         mask = False
     ):
+        
+        if mse_support:
+            mse_criteron = nn.MSELoss()
 
         dataset_len = len(data_loader.dataset)
         epoch_g_loss = 0.
@@ -39,8 +43,13 @@ def run_epoch(
 
                 g_loss = criterion(discriminator(fake_x), real_labels)
                 if learn:
-                    g_loss.backward()
+                    if mse_support:
+                        g_mse_loss = mse_criteron(fake_x.detach(), real_x)
+                        (g_loss + g_mse_loss).backward()
+                    else:
+                        g_loss.backward()
                     optimizer_generator.step()
+
 
                 optimizer_discriminator.zero_grad()
                 real_loss = criterion(discriminator(real_x), real_labels)
@@ -49,7 +58,6 @@ def run_epoch(
                 if learn:
                     d_loss.backward()
                     optimizer_discriminator.step()
-
 
                 with torch.no_grad():
                     epoch_g_loss += g_loss.detach().item() * batch_size
