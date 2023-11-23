@@ -73,7 +73,8 @@ def create_mask(data):
         end_index = end_token_positions[0][0]
     # Create a mask that is True up to the end token and False afterwards
     mask = torch.arange(data.size(0)) < end_index
-    return mask.reshape(-1, 1)
+    mask = mask.reshape(-1, 1).to(data.device)
+    return
 
 def create_batch_mask(data):
     end_token_index = 3
@@ -86,4 +87,5 @@ def create_batch_mask(data):
 
     # Use broadcasting to compare the range with the indices and create the mask
     mask = sequence_range < end_token_indices.unsqueeze(1)
-    return mask.reshape(data.size(0), -1, 1)
+    mask = mask.reshape(data.size(0), -1, 1).to(data.device)
+    return mask
