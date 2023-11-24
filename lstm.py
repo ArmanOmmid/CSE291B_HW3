@@ -76,10 +76,6 @@ class LSTMGenerator(_LSTM):
 
         output, (_, _) = self.lstm(inputs)
 
-        # output = output.contiguous().view(-1, self.h_dim)
-        # output = self.sequential(output)
-        # output = output.view(batch_size, seq_len, -1)
-
         output = self.sequential(output)
         
         x_y = torch.tanh(output[:, :, :2]) * 3 
@@ -109,10 +105,6 @@ class LSTMDiscriminator(_LSTM):
         batch_size, seq_len = inputs.size(0), inputs.size(1)
 
         _, (hidden, cell) = self.lstm(inputs)
-        
-        # output = hidden[-1].contiguous().view(-1, self.h_dim)
-        # output = self.sequential(output)
-        # output = output.view(batch_size, 1)
 
         output = self.sequential(hidden[-1])
 
