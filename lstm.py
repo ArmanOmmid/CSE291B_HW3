@@ -49,7 +49,7 @@ class SequentialTanh(nn.Module):
             if not logits and i < final_i:
                 self.sequential.append(nn.Tanh())
             prev_dim = dim
-        self.sequential = nn.Sequential(self.sequential)
+        self.sequential = nn.Sequential(*self.sequential)
 
     def forward(self, x):
         return self.sequential(x)
@@ -65,7 +65,7 @@ class LSTMGenerator(_LSTM):
         self.lstm = nn.LSTM(h_dim, h_dim, num_layers, batch_first=True)
 
         sequential_channels = [h_dim, h_dim//2, h_dim//4, h_dim//8, dim]
-        self.sequential = SequentialTanh(*sequential_channels)
+        self.sequential = SequentialTanh(sequential_channels)
 
     def forward(self, inputs):
 
@@ -94,7 +94,7 @@ class LSTMDiscriminator(_LSTM):
         self.lstm = nn.LSTM(dim, h_dim, num_layers, batch_first=True)
 
         sequential_channels = [h_dim, h_dim//2, h_dim//4, dim]
-        self.sequential = SequentialTanh(*sequential_channels)
+        self.sequential = SequentialTanh(sequential_channels)
 
     def forward(self, inputs):
 
