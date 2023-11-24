@@ -3,7 +3,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
 
-MAX_LENGTH = 251
+PARITION_LENGTH = 180
+MAX_LENGTH = PARITION_LENGTH + 1
 END_TOKEN = np.array([0, 0, 0, 1])
 PAD_TOKEN = np.array([0, 0, 0, 0])
 
@@ -31,7 +32,7 @@ class LSTMDataset(Dataset):
         paritioned = []
         for seq in data:
             length = len(seq)
-            if length < 180:
+            if length < PARITION_LENGTH:
                 paritioned.append(seq)
             else:
                 paritioned.append(seq[:length//2, :])
