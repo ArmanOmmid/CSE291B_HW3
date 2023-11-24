@@ -6,7 +6,7 @@ from torch.utils.data import Dataset
 PARITION_LENGTH = 180
 MAX_LENGTH = PARITION_LENGTH + 1
 END_TOKEN = np.array([0, 0, 1, 1])
-PAD_TOKEN = np.array([0, 0, 0, 1])
+PAD_TOKEN = np.array([0, 0, 0, 0])
 
 class LSTMDataset(Dataset):
     def __init__(self, data, mean, std, parition=True) -> None:
