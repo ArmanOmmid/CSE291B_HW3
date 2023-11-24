@@ -43,10 +43,10 @@ class SequentialTanh(nn.Module):
 
         self.sequential = []
         prev_dim = channel_dims[0]
-        final_i = len(channel_dims) - 1
+        module_count = len(channel_dims) - 1
         for i, dim in enumerate(channel_dims[1:]):
             self.sequential.append(nn.Linear(prev_dim, dim))
-            if i < final_i or not logits:
+            if i < module_count-1 or not logits:
                 self.sequential.append(nn.Tanh())
             prev_dim = dim
         self.sequential = nn.Sequential(*self.sequential)
