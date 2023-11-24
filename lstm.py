@@ -73,9 +73,11 @@ class LSTMGenerator(_LSTM):
 
         output, (_, _) = self.lstm(inputs)
 
-        output = output.contiguous().view(-1, self.h_dim)
+        # output = output.contiguous().view(-1, self.h_dim)
+        # output = self.sequential(output)
+        # output = output.view(batch_size, seq_len, -1)
+
         output = self.sequential(output)
-        output = output.view(batch_size, seq_len, -1)
         
         x_y = torch.tanh(output[:, :, :2]) * 3 
         b_p = torch.sigmoid(output[:, :, 2:])
@@ -102,11 +104,11 @@ class LSTMDiscriminator(_LSTM):
 
         _, (hidden, cell) = self.lstm(inputs)
         
-        output = hidden[-1].contiguous().view(-1, self.h_dim)
+        # output = hidden[-1].contiguous().view(-1, self.h_dim)
+        # output = self.sequential(output)
+        # output = output.view(batch_size, 1)
 
-        output = self.sequential(output)
-
-        output = output.view(batch_size, 1)
+        output = self.sequential(hidden[-1])
 
         return output
     
