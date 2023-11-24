@@ -93,7 +93,7 @@ class LSTMDiscriminator(_LSTM):
 
         self.lstm = nn.LSTM(dim, h_dim, num_layers, batch_first=True)
 
-        sequential_channels = [h_dim, h_dim//2, h_dim//4, dim]
+        sequential_channels = [h_dim, h_dim//2, h_dim//4, 1]
         self.sequential = SequentialTanh(sequential_channels, logits=True)
 
     def forward(self, inputs):
@@ -108,6 +108,7 @@ class LSTMDiscriminator(_LSTM):
         output = output.contiguous().view(-1, self.h_dim)
         print(output.shape)
         output = self.sequential(output)
+        print(output.shape)
         output = output.view(batch_size, 1)
 
         return output
