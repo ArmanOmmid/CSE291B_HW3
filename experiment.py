@@ -30,11 +30,11 @@ def run_epoch(
 
                 real_x = real_x.to(device)
 
-                batch_size = real_x.size(0)
+                batch_size, seq_length = real_x.size(0), real_x.size(1)
 
                 if warm_up:
                     optimizer_generator.zero_grad()
-                    z = torch.randn(batch_size, 251, generator.h_dim, device=device)
+                    z = torch.randn(batch_size, seq_length, generator.h_dim, device=device)
                     fake_x = generator(z)
                     g_loss = mse_criteron(fake_x, real_x)
                     g_loss.backward()
