@@ -37,8 +37,8 @@ class _LSTM(_Network):
         c0 = torch.zeros(self.num_layers, batch_size, self.h_dim, device=device)
         return (h0, c0)
 
-class SequentialTanh(nn.Module):
-    def __init__(self, channel_dims, logits=False, **kwargs):
+class SequentialModule(nn.Module):
+    def __init__(self, channel_dims, logits=True, **kwargs):
         super().__init__(**kwargs)
 
         self.sequential = []
@@ -47,7 +47,7 @@ class SequentialTanh(nn.Module):
         for i, dim in enumerate(channel_dims[1:]):
             self.sequential.append(nn.Linear(prev_dim, dim))
             if i < module_count-1 or not logits:
-                self.sequential.append(nn.Tanh())
+                self.sequential.append(nn.LeakyReLU())
             prev_dim = dim
         self.sequential = nn.Sequential(*self.sequential)
 
@@ -64,8 +64,8 @@ class LSTMGenerator(_LSTM):
 
         self.lstm = nn.LSTM(h_dim, h_dim, num_layers, batch_first=True)
 
-        sequential_channels = [h_dim, h_dim, h_dim//4, h_dim//8, dim]
-        self.sequential = SequentialTanh(sequential_channels)
+        sequential_channels = [h_dim, h_dim, h_dim//4, dim]
+        self.sequential = SequentialModule(sequential_channels)
 
     def forward(self, inputs):
 
@@ -94,7 +94,7 @@ class LSTMDiscriminator(_LSTM):
         self.lstm = nn.LSTM(dim, h_dim, num_layers, batch_first=True)
 
         sequential_channels = [h_dim, h_dim, h_dim//4, 1]
-        self.sequential = SequentialTanh(sequential_channels, logits=True)
+        self.sequential = SequentialModule(sequential_channels)
 
     def forward(self, inputs):
 
