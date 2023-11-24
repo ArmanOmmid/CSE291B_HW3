@@ -102,6 +102,8 @@ class LSTMDiscriminator(_LSTM):
 
     def forward(self, inputs):
 
+        print(inputs)
+
         batch_size, seq_len = inputs.size(0), inputs.size(1)
 
         _, (hidden, cell) = self.lstm(inputs)
