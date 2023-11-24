@@ -71,7 +71,7 @@ class LSTMGenerator(_LSTM):
 
         batch_size, seq_len = inputs.size(0), inputs.size(1)
 
-        output, (hidden, cell) = self.lstm(inputs)
+        output, (_, _) = self.lstm(inputs)
 
         output = output.contiguous().view(-1, self.h_dim)
         output = self.sequential(output)
