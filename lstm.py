@@ -38,7 +38,7 @@ class _LSTM(_Network):
         return (h0, c0)
 
 class SequentialTanh(nn.Module):
-    def __init__(self, channel_dims, logits=True, **kwargs):
+    def __init__(self, channel_dims, logits=False, **kwargs):
         super().__init__(**kwargs)
 
         self.sequential = []
