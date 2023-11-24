@@ -100,9 +100,9 @@ class LSTMDiscriminator(_LSTM):
 
         batch_size, seq_len = inputs.size(0), inputs.size(1)
 
-        output, (hidden, cell) = self.lstm(inputs)
+        _, (hidden, cell) = self.lstm(inputs)
         
-        output = hidden.contiguous().view(-1, self.h_dim)
+        output = hidden[-1].contiguous().view(-1, self.h_dim)
 
         output = self.sequential(output)
 
