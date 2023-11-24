@@ -8,10 +8,13 @@ END_TOKEN = np.array([0, 0, 0, 1])
 PAD_TOKEN = np.array([0, 0, 0, 0])
 
 class LSTMDataset(Dataset):
-    def __init__(self, data, mean, std) -> None:
+    def __init__(self, data, mean, std, parition=True) -> None:
         super().__init__()
         self.mean_x, self.mean_y = mean
         self.std_x, self.std_y = std
+
+        if parition:
+            data = self._parition(data)
         self.data = self._prepare(data)
 
     def __len__(self):
@@ -23,6 +26,17 @@ class LSTMDataset(Dataset):
     
     def revert(self):
         return self._revert(self.data)
+    
+    def _parition(self, data):
+        paritioned = []
+        for seq in data:
+            length = len(seq)
+            if length < 180:
+                paritioned.append(seq)
+            else:
+                paritioned.append(seq[:length//2, :])
+                paritioned.append(seq[length//2:, :])
+        return paritioned
     
     def _prepare(self, data):
         size = len(data)
