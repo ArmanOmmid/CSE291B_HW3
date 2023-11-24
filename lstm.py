@@ -64,7 +64,7 @@ class LSTMGenerator(_LSTM):
 
         self.lstm = nn.LSTM(h_dim, h_dim, num_layers, batch_first=True)
 
-        sequential_channels = [h_dim, h_dim, h_dim//4, dim]
+        sequential_channels = [h_dim, h_dim//4, dim]
         self.sequential = SequentialModule(sequential_channels)
 
     def forward(self, inputs):
@@ -93,7 +93,7 @@ class LSTMDiscriminator(_LSTM):
 
         self.lstm = nn.LSTM(dim, h_dim, num_layers, batch_first=True)
 
-        sequential_channels = [h_dim, h_dim, h_dim//4, 1]
+        sequential_channels = [h_dim, h_dim//4, 1]
         self.sequential = SequentialModule(sequential_channels)
 
     def forward(self, inputs):
