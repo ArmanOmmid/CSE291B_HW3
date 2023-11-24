@@ -37,6 +37,23 @@ class _LSTM(_Network):
         c0 = torch.zeros(self.num_layers, batch_size, self.h_dim, device=device)
         return (h0, c0)
 
+class SequentialTanh(nn.Module):
+    def __init__(self, channel_dims, logits=True, **kwargs):
+        super().__init__(**kwargs)
+
+        self.sequential = []
+        prev_dim = channel_dims[0]
+        final_i = len(channel_dims) - 1
+        for i, dim in enumerate(channel_dims[1:]):
+            self.sequential.append(nn.Linear(prev_dim, dim))
+            if not logits and i < final_i:
+                self.sequential.append(nn.Tanh())
+            prev_dim = dim
+        self.sequential = nn.Sequential(self.sequential)
+
+    def forward(self, x):
+        return self.sequential(x)
+
 class LSTMGenerator(_LSTM):
     def __init__(self, h_dim=64, dim=4, num_layers=4, **kwargs):
         super().__init__(**kwargs)
@@ -46,15 +63,26 @@ class LSTMGenerator(_LSTM):
         self.num_layers = num_layers
 
         self.lstm = nn.LSTM(h_dim, h_dim, num_layers, batch_first=True)
-        self.fc = nn.Linear(h_dim, dim)
 
-    def forward(self, z):
-        inputs = z
-        output, _ = self.lstm(inputs)
-        output = self.fc(output)
+        sequential_channels = [h_dim, h_dim//2, h_dim//4, h_dim//8, dim]
+        self.sequential = SequentialTanh(sequential_channels)
+
+        print(self.sequential)
+
+    def forward(self, inputs):
+
+        batch_size, seq_len = inputs.size(0), inputs.size(1)
+
+        output, (hidden, cell) = self.lstm(inputs)
+
+        output = output.contiguous().view(-1, self.h_dim)
+        output = self.sequential(output)
+        output = output.view(batch_size, seq_len, -1)
+        
         x_y = torch.tanh(output[:, :, :2]) * 3 
         b_p = torch.sigmoid(output[:, :, 2:])
         output = torch.cat((x_y, b_p), dim=2)
+
         return output
 
 class LSTMDiscriminator(_LSTM):
@@ -66,13 +94,19 @@ class LSTMDiscriminator(_LSTM):
         self.num_layers = num_layers
 
         self.lstm = nn.LSTM(dim, h_dim, num_layers, batch_first=True)
-        self.fc = nn.Linear(h_dim, 1)
+
+        sequential_channels = [h_dim, h_dim//2, h_dim//4, dim]
+        self.sequential = SequentialTanh(sequential_channels)
 
     def forward(self, inputs):
-        # hidden, cell = self.init_hidden(inputs.size(0))
+
+        batch_size, seq_len = inputs.size(0), inputs.size(1)
 
         output, (hidden, cell) = self.lstm(inputs)
-        output = self.fc(hidden[-1]) # Last Layers hidden states
+        
+        output = output.contiguous().view(-1, self.h_dim)
+        output = self.sequential(output)
+        output = output.view(batch_size, seq_len, -1)
 
         return output
     
