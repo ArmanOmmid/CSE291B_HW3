@@ -4,8 +4,8 @@ import torch.nn as nn
 from torch.utils.data import Dataset
 
 MAX_LENGTH = 251
-END_TOKEN = np.array([0, 0, 1, 1])
-PAD_TOKEN = np.array([0, 0, 0, 1])
+END_TOKEN = np.array([0, 0, 0, 1])
+PAD_TOKEN = np.array([0, 0, 0, 0])
 
 class LSTMDataset(Dataset):
     def __init__(self, data, mean, std) -> None:
@@ -99,3 +99,31 @@ def create_batch_mask(data):
     mask = sequence_range < end_token_indices.unsqueeze(1)
     mask = mask.reshape(data.size(0), -1, 1).to(data.device)
     return mask
+
+
+# lengths = [len(x) for x in train_raw_data]
+
+# eos_token = torch.tensor([[0, 0, 0, 1]])
+
+# extended_sequence = []
+# for s in train_raw_data:
+#     s = torch.tensor(s)
+#     s = torch.cat((s, torch.zeros(s.size(0), 1)), dim=-1)
+#     s = torch.cat((s, torch.tensor([[0, 0, 0, 1]])))
+#     extended_sequence.append(s)
+
+# padded_sequences = nn.utils.rnn.pad_sequence(
+#     extended_sequence,
+#     batch_first=True,
+#     padding_value=0
+# )
+
+# sorted_indices = sorted(range(len(lengths)), key=lambda i: lengths[i], reverse=True)
+# sorted_sequences = padded_sequences[sorted_indices]
+# sorted_lengths = np.array([lengths[i] for i in sorted_indices])
+
+# packed_sequences = torch.nn.utils.rnn.pack_padded_sequence(
+#     sorted_sequences, 
+#     lengths=sorted_lengths, 
+#     batch_first=True
+# )

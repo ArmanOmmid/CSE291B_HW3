@@ -48,16 +48,23 @@ class LSTMGenerator(_LSTM):
         self.lstm = nn.LSTM(h_dim, h_dim, num_layers, batch_first=True)
         self.fc = nn.Linear(h_dim, dim)
 
-    def forward(self, z):
-        inputs = z
-        output, _ = self.lstm(inputs)
-        output = self.fc(output)
-        
-        x_y = torch.tanh(output[:, :, :2]) * 3 
-        
-        b_p = torch.sigmoid(output[:, :, 2:])
-        
-        output = torch.cat((x_y, b_p), dim=2)
+    def forward(self, z, max_sequence_length=None):
+        if max_sequence_length is None:
+            inputs = z
+            output, _ = self.lstm(inputs)
+            output = self.fc(output)
+            x_y = torch.tanh(output[:, :, :2]) * 3 
+            b_p = torch.sigmoid(output[:, :, 2:])
+            output = torch.cat((x_y, b_p), dim=2)
+        else:
+            batch_size = z.size(0)
+            h0, c0 = self.init_hidden(batch_size)
+
+            if z.shape[1] > 1:
+                z = z[:, 0, :] # Just get B, 1, H
+
+            
+            
         return output
 
 class LSTMDiscriminator(_LSTM):
