@@ -106,6 +106,7 @@ class LSTMDiscriminator(_LSTM):
         print(output.shape)
         
         output = output.contiguous().view(-1, self.h_dim)
+        print(output.shape)
         output = self.sequential(output)
         output = output.view(batch_size, 1)
 
