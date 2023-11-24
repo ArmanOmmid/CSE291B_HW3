@@ -47,7 +47,7 @@ def run_epoch(
                 fake_labels = torch.zeros(batch_size, 1, device=device)
                 
                 optimizer_generator.zero_grad()
-                z = torch.randn(batch_size, 251, generator.h_dim, device=device)
+                z = torch.randn(batch_size, seq_length, generator.h_dim, device=device)
                 fake_x = generator(z)
 
                 if mask:
