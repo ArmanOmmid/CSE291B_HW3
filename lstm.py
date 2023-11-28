@@ -75,7 +75,7 @@ class LSTMGenerator(_LSTM):
         batch_size, seq_len = inputs.size(0), inputs.size(1)
 
         output, (_, _) = self.lstm(inputs)
-        
+
         output = self.sequential(output)
         
         x_y = torch.tanh(output[:, :, :2]) * 3 
@@ -95,9 +95,9 @@ class LSTMDiscriminator(_LSTM):
         self.lstm = nn.LSTM(dim, h_dim, num_layers, batch_first=True, bidirectional=bidirectional)
 
         if sequential_channels is None or len(sequential_channels) == 0:
-            sequential_channels = [h_dim * (1 + int(bidirectional)), 1]
+            sequential_channels = [h_dim, 1]
         else:
-            sequential_channels = [h_dim * (1 + int(bidirectional))] + sequential_channels + [1]
+            sequential_channels = [h_dim] + sequential_channels + [1]
         self.sequential = SequentialModule(sequential_channels)
 
     def forward(self, inputs):
