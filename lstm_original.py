@@ -37,7 +37,7 @@ class _LSTM(_Network):
         c0 = torch.zeros(self.num_layers, batch_size, self.h_dim, device=device)
         return (h0, c0)
 
-class LSTMGenerator(_LSTM):
+class LSTMGenerator0(_LSTM):
     def __init__(self, h_dim=64, dim=4, num_layers=4, sequential_channels=None, bidirectional=None, **kwargs):
         super().__init__(**kwargs)
 
@@ -59,8 +59,8 @@ class LSTMGenerator(_LSTM):
 
         return output
 
-class LSTMDiscriminator(_LSTM):
-    def __init__(self, h_dim=64, dim=4, num_layers=4, **kwargs):
+class LSTMDiscriminator0(_LSTM):
+    def __init__(self, h_dim=64, dim=4, num_layers=4, sequential_channels=None, bidirectional=None,  **kwargs):
         super().__init__(**kwargs)
 
         self.dim = dim
