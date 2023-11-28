@@ -76,7 +76,7 @@ class LSTMGenerator(_LSTM):
 
         output, (_, _) = self.lstm(inputs)
 
-        print(hidden.shape)
+        print(output.shape)
 
         print(self.sequential)
 
