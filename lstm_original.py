@@ -38,7 +38,7 @@ class _LSTM(_Network):
         return (h0, c0)
 
 class LSTMGenerator(_LSTM):
-    def __init__(self, h_dim=64, dim=4, num_layers=4, **kwargs):
+    def __init__(self, h_dim=64, dim=4, num_layers=4, sequential_channels=None, bidirectional=None, **kwargs):
         super().__init__(**kwargs)
 
         self.dim = dim
