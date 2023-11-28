@@ -55,14 +55,14 @@ class SequentialModule(nn.Module):
         return self.sequential(x)
 
 class LSTMGenerator(_LSTM):
-    def __init__(self, h_dim=64, dim=4, num_layers=4, sequential_channels=None, **kwargs):
+    def __init__(self, h_dim=64, dim=4, num_layers=4, sequential_channels=None,  bidirectional=False, **kwargs):
         super().__init__(**kwargs)
 
         self.dim = dim
         self.h_dim = h_dim
         self.num_layers = num_layers
 
-        self.lstm = nn.LSTM(h_dim, h_dim, num_layers, batch_first=True)
+        self.lstm = nn.LSTM(h_dim, h_dim, num_layers, batch_first=True, bidirectional=bidirectional)
 
         if sequential_channels is None or len(sequential_channels) == 0:
             sequential_channels = [h_dim, dim]
@@ -85,14 +85,14 @@ class LSTMGenerator(_LSTM):
         return output
 
 class LSTMDiscriminator(_LSTM):
-    def __init__(self, h_dim=64, dim=4, num_layers=4, sequential_channels=None, **kwargs):
+    def __init__(self, h_dim=64, dim=4, num_layers=4, sequential_channels=None, bidirectional=False, **kwargs):
         super().__init__(**kwargs)
 
         self.dim = dim
         self.h_dim = h_dim
         self.num_layers = num_layers
 
-        self.lstm = nn.LSTM(dim, h_dim, num_layers, batch_first=True)
+        self.lstm = nn.LSTM(dim, h_dim, num_layers, batch_first=True, bidirectional=bidirectional)
 
         if sequential_channels is None or len(sequential_channels) == 0:
             sequential_channels = [h_dim, 1]
